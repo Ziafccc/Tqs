@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> تطبيق </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000000; /* خلفية سوداء */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff; /* النص أبيض ليتناسب مع الخلفية */
+            overflow: hidden;
+            position: relative;
+        }
+        .weather-container {
+            background-color: rgba(0, 0, 0, 0.7); /* خلفية داكنة شفافة */
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.25);
+            padding: 25px;
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        input {
+            padding: 15px;
+            font-size: 18px;
+            width: 75%;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            outline: none;
+            text-align: center;
+        }
+        input:focus {
+            border-color: #00BFFF;
+        }
+        button {
+            padding: 15px;
+            width: 75%;
+            background-color: #00BFFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0072ff;
+        }
+        .weather-info {
+            margin-top: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+            color: #fff;
+        }
+        .weather-info h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        .weather-info p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #00BFFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0072ff;
+        }
+        /* تأثير النجوم في الخلفية */
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: twinkle 1.5s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        .star:nth-child(odd) {
+            width: 4px;
+            height: 4px;
+            animation-duration: 1.2s;
+        }
+        .star:nth-child(even) {
+            width: 3px;
+            height: 3px;
+            animation-duration: 1.7s;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="weather-container">
+        <h1>تطبيق الطقس</h1>
+        <input type="text" id="city" placeholder="أدخل اسم المدينة">
+        <button onclick="getWeather()">عرض الطقس</button>
+
+        <div id="weather-result"></div>
+        
+        <a href="https://t.me/Xisjs" class="btn">قناتي</a>
+    </div>
+
+    <script>
+        function getWeather() {
+            var city = document.getElementById('city').value;
+            var apiKey = 'eedbc05ba060c787ab0614cad1f2e12b';
+            var url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${apiKey}&units=metric&lang=ar`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.cod === 200) {
+                        var weather = data.weather[0].main;
+                        var description = data.weather[0].description;
+                        var temp = data.main.temp;
+                        var speed = data.wind.speed;
+                        var humidity = data.main.humidity;
+
+                        var conditions = '';
+                        if (weather === 'Clear') conditions = 'مشمس';
+                        else if (weather === 'Clouds') conditions = 'مغيم';
+                        else if (weather === 'Rain') conditions = 'امطار';
+                        else if (weather === 'Thunderstorm') conditions = 'رياح';
+                        else if (weather === 'Mist') conditions = 'مـه 🌫';
+
+                        document.getElementById('weather-result').innerHTML = `
+                            <div class="weather-info">
+                                <h2>الطقس في ${city}</h2>
+                                <p><strong>الجو:</strong> ${conditions}</p>
+                                <p><strong>درجة الحرارة:</strong> ${temp}°C</p>
+                                <p><strong>سرعة الرياح:</strong> ${speed} m/s</p>
+                                <p><strong>رطوبة الجو:</strong> ${humidity}%</p>
+                            </div>`;
+                    } else {
+                        document.getElementById('weather-result').innerHTML = `
+                            <div class="weather-info" style="color: red;">
+                                خطأ: تأكد من اسم المدينة
+                            </div>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('weather-result').innerHTML = `
+                        <div class="weather-info" style="color: red;">
+                            خطأ في الاتصال
+                        </div>`;
+                });
+        }
+
+        // إضافة تأثير النجوم
+        for (let i = 0; i < 100; i++) {
+            let star = document.createElement('div');
+            star.classList.add('star');
+            star.style.top = `${Math.random() * 100}vh`;
+            star.style.left = `${Math.random() * 100}vw`;
+            document.body.appendChild(star);
+        }
+    </script>
+
+</body>
+</html>
